@@ -1,0 +1,16 @@
+name: LimitedWorldEdit
+softdepend: [WorldEdit,WorldGuard]
+main: com.james137137.LimitedWorldEdit.LimitedWorldEdit
+version: 0.1
+authors: [James Anderson]
+commands:
+  DonatorsWorldEdit:
+    description: DonatorsWorldEdit
+permissions:
+  LimitedWorldEdit.*:
+    description: Gives access to all LimitedWorldEdit commands
+    children:
+      LimitedWorldEdit.bypass: true
+  LimitedWorldEdit.bypass:
+    description: Allows player to bypass LimitedWorldEdit
+    default: op    
