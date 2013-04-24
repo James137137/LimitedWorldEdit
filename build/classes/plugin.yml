@@ -1,7 +1,7 @@
 name: LimitedWorldEdit
 softdepend: [WorldEdit,WorldGuard]
 main: com.james137137.LimitedWorldEdit.LimitedWorldEdit
-version: 0.1
+version: 0.2
 authors: [James Anderson]
 commands:
   DonatorsWorldEdit:

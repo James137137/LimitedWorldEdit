@@ -15,10 +15,14 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.h31ix.updater.Updater;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -32,8 +36,12 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class LimitedWorldEdit extends JavaPlugin {
     
+    public static List<String> playerNames = new ArrayList<>();
+    public static List<Double> lastRun = new ArrayList<>();
+    public boolean delayOn;
     static final Logger log = Logger.getLogger("Minecraft");
-    
+    public double delay; //in secounds
+    Calendar mytime = Calendar.getInstance();
     
     public static WorldGuardPlugin myWorldGuardPlugin;
     public static WorldEditPlugin worldEdit;
@@ -49,6 +57,10 @@ public class LimitedWorldEdit extends JavaPlugin {
             // Failed to submit the stats :-(
         }
         
+        
+        
+        
+        
         getServer().getPluginManager().registerEvents(new LimitedWorldEditListener(this), this);
         
         
@@ -63,7 +75,11 @@ public class LimitedWorldEdit extends JavaPlugin {
         
         
         FileConfiguration config = getConfig();
-        config.addDefault("AutoUpdate", true);
+        config.addDefault("AutoUpdate", false);
+        config.addDefault("delayOn", true);
+        config.addDefault("delayTimeInSecounds", 10);
+        delayOn = config.getBoolean("delayOn");
+        delay = (double)config.getInt("delayTimeInSecounds");
         config.options().copyDefaults(true);
         saveConfig();
         
@@ -102,9 +118,10 @@ public class LimitedWorldEdit extends JavaPlugin {
     }
 
     
+    @Override
     public boolean onCommand(CommandSender sender, Command command, String commandLabel, String[] args) {
         String commandName = command.getName().toLowerCase();
-        String[] trimmedArgs = args;
+        //String[] trimmedArgs = args;
 
 
         if (commandName.equalsIgnoreCase("DonatorsWorldEdit")) {
@@ -123,6 +140,17 @@ public class LimitedWorldEdit extends JavaPlugin {
     
     public boolean CanWorldEdit(CommandSender sender) throws CommandException
     {
+        
+        if (delayOn)
+        {
+            if (Math.abs(getTime() - getLastRun((Player)sender) + 0.00001) >= (double) delay/3600.0)
+            {
+                lastRun.set(getPlayerID((Player)sender),getTime());
+            } else{
+                sender.sendMessage(ChatColor.RED+"cooldown enable of ("+delay+" Secs): please wait");
+                return false;  
+            }
+        }
         Player player = myWorldGuardPlugin.checkPlayer(sender);
         Selection sel = worldEdit.getSelection(player);
 
@@ -171,6 +199,44 @@ public class LimitedWorldEdit extends JavaPlugin {
         
         return false;
         
+    }
+    
+    public double getTime ()
+    {
+        mytime = Calendar.getInstance(); 
+        return (double) mytime.get(Calendar.HOUR_OF_DAY) + (double) mytime.get(Calendar.MINUTE) / 60.0 + (double) mytime.get(Calendar.SECOND) / 3600.0;
+        
+    }
+    
+    public int getPlayerID(Player player) {
+        String playerName = player.getName();
+        for (int i = 0; i < playerNames.size(); i++) {
+            if (playerNames.get(i).equalsIgnoreCase(playerName)) {
+                return i;
+            }
+        }
+
+
+
+        return -1;
+    }
+
+    public void SetPlayerID(Player player) {
+        int playerid = getPlayerID(player);
+
+
+        if (playerid == -1) {
+            playerNames.add(player.getName());
+            lastRun.add(getTime() - (delay/3600.0));
+        }
+    }
+    
+    public double getLastRun(Player player) {
+        int playerid = getPlayerID(player);
+        if (playerid >= 0) {
+            return lastRun.get(playerid);
+        }
+        return -1.0;
     }
     
     

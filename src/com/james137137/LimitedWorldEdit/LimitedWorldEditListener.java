@@ -20,14 +20,21 @@ public class LimitedWorldEditListener implements Listener {
     String[] worldEditCommands = {"set", "replace", "walls"};
     String[] worldGaurdCommands = {"region define","region redefine"};
     private LimitedWorldEdit LimitedWorldEdit;
+    private static Player player;
 
     LimitedWorldEditListener(LimitedWorldEdit aThis) {
         this.LimitedWorldEdit = aThis;
     }
 
     @EventHandler
+    public void onPlayerJoin(PlayerJoinEvent event)
+    {
+        player = event.getPlayer();
+        LimitedWorldEdit.SetPlayerID(player);
+    }
+    @EventHandler
     public void onPlayerCommand(PlayerCommandPreprocessEvent event) throws CommandException {
-        Player player = event.getPlayer();
+         player = event.getPlayer();
         if (player.hasPermission("LimitedWorldEdit.bypass")) {
             return;
         }
