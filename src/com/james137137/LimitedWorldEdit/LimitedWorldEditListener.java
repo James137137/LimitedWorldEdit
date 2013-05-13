@@ -17,7 +17,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
  */
 public class LimitedWorldEditListener implements Listener {
 
-    String[] worldEditCommands = {"set", "replace", "walls"};
+    String[] worldEditCommands = {"set", "replace", "walls","undo","redo"};
     String[] worldGaurdCommands = {"region define","region redefine"};
     private LimitedWorldEdit LimitedWorldEdit;
     private static Player player;

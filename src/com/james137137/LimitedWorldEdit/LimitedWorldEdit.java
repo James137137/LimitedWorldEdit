@@ -20,6 +20,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import me.ryanhamshire.GriefPrevention.Claim;
+import me.ryanhamshire.GriefPrevention.GriefPrevention;
 import net.h31ix.updater.Updater;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -45,6 +47,7 @@ public class LimitedWorldEdit extends JavaPlugin {
     
     public static WorldGuardPlugin myWorldGuardPlugin;
     public static WorldEditPlugin worldEdit;
+    private boolean useGriefPrevention = false;
     
     @Override
     public void onEnable() {
@@ -56,6 +59,7 @@ public class LimitedWorldEdit extends JavaPlugin {
         } catch (IOException e) {
             // Failed to submit the stats :-(
         }
+        
         
         
         
@@ -78,6 +82,7 @@ public class LimitedWorldEdit extends JavaPlugin {
         config.addDefault("AutoUpdate", false);
         config.addDefault("delayOn", true);
         config.addDefault("delayTimeInSecounds", 10);
+        config.addDefault("UseGriefPrevention", true);
         delayOn = config.getBoolean("delayOn");
         delay = (double)config.getInt("delayTimeInSecounds");
         config.options().copyDefaults(true);
@@ -87,6 +92,11 @@ public class LimitedWorldEdit extends JavaPlugin {
         if (config.getBoolean("AutoUpdate"))
         {
             Updater updater = new Updater(this, "limitedworldedit", this.getFile(), Updater.UpdateType.DEFAULT, false);
+        }
+        
+        if (this.getServer().getPluginManager().getPlugin("GriefPrevention") != null)
+        {
+            useGriefPrevention = config.getBoolean("UseGriefPrevention");
         }
     }
     
@@ -159,16 +169,42 @@ public class LimitedWorldEdit extends JavaPlugin {
             return false;
         }
         
+        
+        if (useGriefPrevention) {
+                Claim claim1 = GriefPrevention.instance.dataStore.getClaimAt(sel.getMinimumPoint(), true, null);
+                if (claim1 == null) {
+                    player.sendMessage(ChatColor.RED +"a Pos is not in a claim");
+                    return false;
+                } else if (claim1.allowBuild(player) != null) {
+                    player.sendMessage(ChatColor.RED +"a Pos is not in a claim that you can build in");
+                    return false;
+                }
+                Claim claim2 = GriefPrevention.instance.dataStore.getClaimAt(sel.getMaximumPoint(), true, null);
+                if (claim2 == null) {
+                    player.sendMessage(ChatColor.RED +"a Pos is not in a claim");
+                    return false;
+                } else if (claim2.allowBuild(player) != null) {
+                    player.sendMessage(ChatColor.RED +"a Pos is not in a claim that you can build in");
+                    return false;
+                }
+                if (!claim1.equals(claim2))
+                {
+                    player.sendMessage(ChatColor.RED +"Pos1 and Pos2 are not in the same claim");
+                    return false;
+                }
+                
+                return true;
+                
+        }
+        
         BlockVector pos1 = sel.getNativeMinimumPoint().toBlockVector();
         BlockVector pos2 = sel.getNativeMaximumPoint().toBlockVector();
-        
-        
-        
         RegionManager mgr = myWorldGuardPlugin.getGlobalRegionManager().get(sel.getWorld());
         Vector pos1pt = new Vector(pos1.getBlockX(), pos1.getBlockY(), pos1.getBlockZ());
         Vector pos2pt = new Vector(pos2.getBlockX(), pos2.getBlockY(), pos2.getBlockZ());
         ApplicableRegionSet pos1set = mgr.getApplicableRegions(pos1pt);
         ApplicableRegionSet pos2set = mgr.getApplicableRegions(pos2pt);
+        
         if (pos1set.size() == 0) {
             sender.sendMessage("pos1 is not in a WorldGuard region");
            return false;
