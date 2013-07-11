@@ -20,9 +20,7 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import me.ryanhamshire.GriefPrevention.Claim;
-import me.ryanhamshire.GriefPrevention.GriefPrevention;
-import net.h31ix.updater.Updater;
+import com.james137137.h31ix.updater.Updater;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -44,10 +42,11 @@ public class LimitedWorldEdit extends JavaPlugin {
     static final Logger log = Logger.getLogger("Minecraft");
     public double delay; //in secounds
     Calendar mytime = Calendar.getInstance();
+    public int blockLimit;
     
     public static WorldGuardPlugin myWorldGuardPlugin;
     public static WorldEditPlugin worldEdit;
-    private boolean useGriefPrevention = false;
+    
     
     @Override
     public void onEnable() {
@@ -76,13 +75,17 @@ public class LimitedWorldEdit extends JavaPlugin {
         myWorldGuardPlugin = getWorldGuard();
         worldEdit = getWorldEdit();
         
+        blockLimit = worldEdit.getLocalConfiguration().maxChangeLimit;
+        
         
         
         FileConfiguration config = getConfig();
         config.addDefault("AutoUpdate", false);
         config.addDefault("delayOn", true);
         config.addDefault("delayTimeInSecounds", 10);
-        config.addDefault("UseGriefPrevention", true);
+        config.addDefault("DelayBasedOnLastWorldEdit",true);
+        config.addDefault("NumberOfBlocksForEverySecoundOfDelay", 10000); // this has not yet been implemented
+        
         delayOn = config.getBoolean("delayOn");
         delay = (double)config.getInt("delayTimeInSecounds");
         config.options().copyDefaults(true);
@@ -92,11 +95,6 @@ public class LimitedWorldEdit extends JavaPlugin {
         if (config.getBoolean("AutoUpdate"))
         {
             Updater updater = new Updater(this, "limitedworldedit", this.getFile(), Updater.UpdateType.DEFAULT, false);
-        }
-        
-        if (this.getServer().getPluginManager().getPlugin("GriefPrevention") != null)
-        {
-            useGriefPrevention = config.getBoolean("UseGriefPrevention");
         }
     }
     
@@ -167,34 +165,6 @@ public class LimitedWorldEdit extends JavaPlugin {
         if (sel == null) {
             sender.sendMessage("Select a region with WorldEdit first.");
             return false;
-        }
-        
-        
-        if (useGriefPrevention) {
-                Claim claim1 = GriefPrevention.instance.dataStore.getClaimAt(sel.getMinimumPoint(), true, null);
-                if (claim1 == null) {
-                    player.sendMessage(ChatColor.RED +"a Pos is not in a claim");
-                    return false;
-                } else if (claim1.allowBuild(player) != null) {
-                    player.sendMessage(ChatColor.RED +"a Pos is not in a claim that you can build in");
-                    return false;
-                }
-                Claim claim2 = GriefPrevention.instance.dataStore.getClaimAt(sel.getMaximumPoint(), true, null);
-                if (claim2 == null) {
-                    player.sendMessage(ChatColor.RED +"a Pos is not in a claim");
-                    return false;
-                } else if (claim2.allowBuild(player) != null) {
-                    player.sendMessage(ChatColor.RED +"a Pos is not in a claim that you can build in");
-                    return false;
-                }
-                if (!claim1.equals(claim2))
-                {
-                    player.sendMessage(ChatColor.RED +"Pos1 and Pos2 are not in the same claim");
-                    return false;
-                }
-                
-                return true;
-                
         }
         
         BlockVector pos1 = sel.getNativeMinimumPoint().toBlockVector();
