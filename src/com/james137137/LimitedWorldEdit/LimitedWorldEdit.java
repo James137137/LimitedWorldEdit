@@ -124,9 +124,15 @@ public class LimitedWorldEdit extends JavaPlugin {
         String commandName = command.getName().toLowerCase();
         //String[] trimmedArgs = args;
 
+        if (!(sender instanceof Player))
+        {
+            sender.sendMessage("This command is for players only");
+            return true;
+        }
+        
         if (commandName.equalsIgnoreCase("DonatorsWorldEdit")) {
             try {
-                sender.sendMessage("" + CanWorldEdit(sender));
+                sender.sendMessage("" + CanWorldEdit((Player)sender));
 
             } catch (CommandException ex) {
                 Logger.getLogger(LimitedWorldEdit.class.getName()).log(Level.SEVERE, null, ex);
@@ -136,7 +142,7 @@ public class LimitedWorldEdit extends JavaPlugin {
         return false;
     }
 
-    public boolean CanWorldEdit(CommandSender sender) throws CommandException {
+    public boolean CanWorldEdit(Player sender) throws CommandException {
 
         if (delayOn) {
             if (Math.abs(getTime() - getLastRun((Player) sender) + 0.00001) >= (double) delay / 3600.0) {
@@ -197,7 +203,7 @@ public class LimitedWorldEdit extends JavaPlugin {
 
         if (pos1Id.equalsIgnoreCase(pos2Id)) {
             ProtectedRegion region = mgr.getRegion(pos1Id);
-            if (region.getOwners().contains(sender.getName())) {
+            if (region.getOwners().contains(sender.getUniqueId())) {
                 return true;
             } else {
                 sender.sendMessage("You are not owner of this region");
