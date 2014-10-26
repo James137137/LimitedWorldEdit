@@ -80,7 +80,7 @@ public class WorldGaurdAPI {
 
         if (pos1Id.equalsIgnoreCase(pos2Id)) {
             ProtectedRegion region = mgr.getRegion(pos1Id);
-            if (region.getOwners().contains(sender.getUniqueId())) {
+            if (region.getOwners() != null && region.getOwners().contains(sender.getUniqueId())) {
                 return true;
             } else {
                 sender.sendMessage("You are not owner of this region");

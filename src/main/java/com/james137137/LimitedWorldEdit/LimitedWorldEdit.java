@@ -9,9 +9,12 @@ import com.james137137.LimitedWorldEdit.hooks.WorldGaurdAPI;
 import com.james137137.mcstats.Metrics;
 import com.sk89q.minecraft.util.commands.CommandException;
 import com.sk89q.worldedit.BlockVector;
+import com.sk89q.worldedit.EmptyClipboardException;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.bukkit.selections.Selection;
+import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
@@ -148,10 +151,14 @@ public class LimitedWorldEdit extends JavaPlugin {
                 return false;
             }
         }
-
         Selection sel = worldEdit.getSelection((Player) sender);
         if (sel == null) {
             sender.sendMessage("Select a region with WorldEdit first.");
+            return false;
+        }
+        int limit = worldEdit.getSession(sender).getBlockChangeLimit();
+        if (sel.getArea() * sel.getHeight() >= limit && limit > 0) {
+            sender.sendMessage(ChatColor.RED + "The volume (number of blocks) exceeds your limit of " + limit);
             return false;
         }
         BlockVector pos1 = sel.getNativeMinimumPoint().toBlockVector();
