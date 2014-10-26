@@ -1,5 +1,5 @@
 name: LimitedWorldEdit
-softdepend: [WorldEdit,WorldGuard]
+softdepend: [WorldEdit,WorldGuard,Towny,PlotMe]
 main: com.james137137.LimitedWorldEdit.LimitedWorldEdit
 version: 1.0.1-SNAPSHOT
 authors: [James Anderson]
