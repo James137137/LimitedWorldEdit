@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.gravitydevelopment.updater.Updater;
@@ -32,6 +33,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachmentInfo;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -76,8 +78,9 @@ public class LimitedWorldEdit extends JavaPlugin {
         config.addDefault("UseTownyAPI", false);
         config.addDefault("delayOn", true);
         config.addDefault("delayTimeInSecounds", 10);
-        config.addDefault("DelayBasedOnLastWorldEdit", true);
-        config.addDefault("NumberOfBlocksForEverySecoundOfDelay", 10000); // this has not yet been implemented
+        config.addDefault("DefualtLimit", 100);
+        //config.addDefault("DelayBasedOnLastWorldEdit", true);
+        //config.addDefault("NumberOfBlocksForEverySecoundOfDelay", 10000); // this has not yet been implemented
 
         if (config.getBoolean("UseWorldGaurdAPI")) {
             worldGaurdAPI = new WorldGaurdAPI(this);
@@ -129,6 +132,15 @@ public class LimitedWorldEdit extends JavaPlugin {
         }
 
         if (commandName.equalsIgnoreCase("DonatorsWorldEdit")) {
+            if (args.length >= 1) {
+                if (args[0].equalsIgnoreCase("limit")) {
+                    if (args.length == 1) {
+                        int limit = getLimit((Player) sender);
+                        sender.sendMessage(ChatColor.GREEN + "Your limit is " + ChatColor.GOLD + limit);
+                        return true;
+                    }
+                }
+            }
             try {
                 sender.sendMessage("" + CanWorldEdit((Player) sender));
 
@@ -144,7 +156,7 @@ public class LimitedWorldEdit extends JavaPlugin {
 
         boolean result = true;
         if (delayOn) {
-            if (Math.abs(getTime() - getLastRun((Player) sender) + 0.00001) >= (double) delay / 3600.0) {
+            if (Math.abs(getTime() - getLastRun(sender) + 0.00001) >= (double) delay / 3600.0) {
                 lastRun.set(getPlayerID((Player) sender), getTime());
             } else {
                 sender.sendMessage(ChatColor.RED + "cooldown enable of (" + delay + " Secs): please wait");
@@ -156,7 +168,7 @@ public class LimitedWorldEdit extends JavaPlugin {
             sender.sendMessage("Select a region with WorldEdit first.");
             return false;
         }
-        int limit = worldEdit.getSession(sender).getBlockChangeLimit();
+        int limit = getLimit(sender);
         if (sel.getArea() * sel.getHeight() >= limit && limit > 0) {
             sender.sendMessage(ChatColor.RED + "The volume (number of blocks) exceeds your limit of " + limit);
             return false;
@@ -214,6 +226,32 @@ public class LimitedWorldEdit extends JavaPlugin {
             return lastRun.get(playerid);
         }
         return -1.0;
+    }
+
+    private int getLimit(Player player) {
+        int limit = worldEdit.getSession(player).getBlockChangeLimit();
+        if (limit < 0) {
+            return limit;
+        }
+        Set<PermissionAttachmentInfo> effectivePermissions = player.getEffectivePermissions();
+        for (PermissionAttachmentInfo permissionAttachmentInfo : effectivePermissions) {
+            if (permissionAttachmentInfo.getPermission().startsWith("limitedworldedit.limit.")) {
+
+                try {
+                    int ammount = Integer.parseInt(permissionAttachmentInfo.getPermission().split(".limit.")[1]);
+                    if (limit < ammount) {
+                        limit = ammount;
+                    }
+                } catch (Exception e) {
+                }
+
+            }
+        }
+        if (this.getConfig().getInt("DefualtLimit") > limit)
+        {
+            limit = this.getConfig().getInt("DefualtLimit");
+        }
+        return limit;
     }
 
 }
