@@ -44,7 +44,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 public class LimitedWorldEdit extends JavaPlugin {
 
     public static List<String> playerNames = new ArrayList<>();
-    public static List<Double> lastRun = new ArrayList<>();
+    public static List<Double> lastRun;
     public boolean delayOn;
     static final Logger log = Logger.getLogger("Minecraft");
     public double delay; //in secounds
@@ -57,6 +57,7 @@ public class LimitedWorldEdit extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        lastRun = new ArrayList<>();
         try {
             Metrics metrics = new Metrics(this);
             metrics.start();
