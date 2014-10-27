@@ -53,7 +53,7 @@
     </repositories>
     
     <build>
-        <finalName>LimtedWorldEdit</finalName>
+        <finalName>LimitedWorldEdit</finalName>
     </build>
     
 </project>
