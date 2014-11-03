@@ -76,7 +76,7 @@ public class WorldGaurdAPI {
         String pos1Id;
         String pos2Id;
         pos1Id = ((ProtectedRegion) pos1set.iterator().next()).getId();
-        pos2Id = ((ProtectedRegion) pos1set.iterator().next()).getId();
+        pos2Id = ((ProtectedRegion) pos2set.iterator().next()).getId();
 
         if (pos1Id.equalsIgnoreCase(pos2Id)) {
             ProtectedRegion region = mgr.getRegion(pos1Id);
