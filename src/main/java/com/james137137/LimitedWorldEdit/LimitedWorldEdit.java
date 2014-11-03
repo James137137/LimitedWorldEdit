@@ -21,6 +21,7 @@ import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
@@ -52,11 +53,17 @@ public class LimitedWorldEdit extends JavaPlugin {
     public int blockLimit;
     TownyAPI townyAPI = null;
     WorldGaurdAPI worldGaurdAPI = null;
+    List<String> worldEditCommands;
+    List<String> worldGaurdCommands;
+    String[] worldEditCommandst = {"set", "replace", "walls","undo","redo"};
+    String[] worldGaurdCommandst = {"region define","region redefine"};
 
     public static WorldEditPlugin worldEdit;
 
     @Override
     public void onEnable() {
+        worldEditCommands = Arrays.asList(worldEditCommandst);  
+        worldGaurdCommands = Arrays.asList(worldGaurdCommandst);  
         lastRun = new ArrayList<>();
         try {
             Metrics metrics = new Metrics(this);
@@ -64,8 +71,6 @@ public class LimitedWorldEdit extends JavaPlugin {
         } catch (IOException e) {
             // Failed to submit the stats :-(
         }
-
-        getServer().getPluginManager().registerEvents(new LimitedWorldEditListener(this), this);
 
         String version = Bukkit.getServer().getPluginManager().getPlugin(this.getName()).getDescription().getVersion();
 
@@ -80,6 +85,9 @@ public class LimitedWorldEdit extends JavaPlugin {
         config.addDefault("delayOn", true);
         config.addDefault("delayTimeInSecounds", 10);
         config.addDefault("DefualtLimit", 100);
+        config.addDefault("worldEditCommands", worldEditCommands);
+        config.addDefault("worldGaurdCommands", worldGaurdCommands);
+        
         //config.addDefault("DelayBasedOnLastWorldEdit", true);
         //config.addDefault("NumberOfBlocksForEverySecoundOfDelay", 10000); // this has not yet been implemented
 
@@ -98,6 +106,8 @@ public class LimitedWorldEdit extends JavaPlugin {
         if (config.getBoolean("AutoUpdate")) {
             UpdatePlugin();
         }
+        
+        getServer().getPluginManager().registerEvents(new LimitedWorldEditListener(this), this);
 
         log.log(Level.INFO, this.getName() + ":Version {0} enabled", version);
     }
@@ -243,7 +253,7 @@ public class LimitedWorldEdit extends JavaPlugin {
                     if (limit < ammount) {
                         limit = ammount;
                     }
-                } catch (Exception e) {
+                } catch (NumberFormatException e) {
                 }
 
             }

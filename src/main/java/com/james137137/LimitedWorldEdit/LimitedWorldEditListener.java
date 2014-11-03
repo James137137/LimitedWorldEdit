@@ -5,6 +5,7 @@
 package com.james137137.LimitedWorldEdit;
 
 import com.sk89q.minecraft.util.commands.CommandException;
+import java.util.List;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -17,13 +18,15 @@ import org.bukkit.event.player.PlayerJoinEvent;
  */
 public class LimitedWorldEditListener implements Listener {
 
-    String[] worldEditCommands = {"set", "replace", "walls","undo","redo"};
-    String[] worldGaurdCommands = {"region define","region redefine"};
+    private List<String> worldEditCommands;
+    private List<String> worldGaurdCommands;
     private LimitedWorldEdit LimitedWorldEdit;
     private static Player player;
 
     LimitedWorldEditListener(LimitedWorldEdit aThis) {
         this.LimitedWorldEdit = aThis;
+        worldEditCommands = LimitedWorldEdit.getConfig().getStringList("worldEditCommands");
+        worldGaurdCommands = LimitedWorldEdit.getConfig().getStringList("worldGaurdCommands");
     }
 
     @EventHandler
@@ -43,7 +46,7 @@ public class LimitedWorldEditListener implements Listener {
         String command = event.getMessage();
         if (command.length() >= 2) {
             //String commandsub = command.substring(0, 2);
-            if (isWorldEditCommand(worldEditCommands, event.getMessage()) || isWorldGaurdCommand(worldGaurdCommands, event.getMessage())) {
+            if (isWorldEditCommand(event.getMessage()) || isWorldGaurdCommand(event.getMessage())) {
                
                     if (!(LimitedWorldEdit.CanWorldEdit(player))) {
                         event.setCancelled(true);
@@ -58,7 +61,7 @@ public class LimitedWorldEditListener implements Listener {
 
     }
 
-    private boolean isWorldEditCommand(String[] worldeditCommands1, String message) {
+    private boolean isWorldEditCommand(String message) {
         String command = "";
         if (message.length() <= 2) {
             return false;
@@ -72,8 +75,8 @@ public class LimitedWorldEditListener implements Listener {
 
         }
         
-        for (int i = 0; i < worldEditCommands.length; i++) {
-            if (command.equalsIgnoreCase(worldeditCommands1[i])) {
+        for (int i = 0; i < worldEditCommands.size(); i++) {
+            if (command.equalsIgnoreCase(worldEditCommands.get(i))) {
                 return true;
             }
         }
@@ -81,7 +84,7 @@ public class LimitedWorldEditListener implements Listener {
         return false;
     }
     
-    private boolean isWorldGaurdCommand(String[] worldeditCommands1, String message) {
+    private boolean isWorldGaurdCommand(String message) {
         String command = "";
         /*if (message.length() <= 2) {
             return false;
@@ -104,8 +107,8 @@ public class LimitedWorldEditListener implements Listener {
             }
 
         }
-        for (int i = 0; i < worldGaurdCommands.length; i++) {
-            if (command.equalsIgnoreCase(worldeditCommands1[i])) {
+        for (int i = 0; i < worldGaurdCommands.size(); i++) {
+            if (command.equalsIgnoreCase(worldGaurdCommands.get(i))) {
                 return true;
             }
         }
