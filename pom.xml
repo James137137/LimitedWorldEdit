@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.james137137</groupId>
     <artifactId>LimitedWorldEdit</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.6</version>
     <packaging>jar</packaging>
     <properties>
         
@@ -33,12 +33,12 @@
             <type>jar</type>
         </dependency>
         <dependency>
-  		<groupId>com.palmergames</groupId>
-  		<artifactId>Towny</artifactId>
-  		<version>0.88.0.0</version>
-  		<scope>system</scope>
-  		<systemPath>${project.basedir}/lib/Towny-0.88.0.0.jar</systemPath>
-  	</dependency>
+            <groupId>com.palmergames</groupId>
+            <artifactId>Towny</artifactId>
+            <version>0.88.0.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/Towny-0.88.0.0.jar</systemPath>
+        </dependency>
     </dependencies>
     
     <repositories>
@@ -54,6 +54,16 @@
     
     <build>
         <finalName>LimitedWorldEdit</finalName>
+        <resources>
+            <resource>
+                <targetPath>.</targetPath>
+                <filtering>true</filtering>
+                <directory>${basedir}/src/main/resources/</directory>
+                <includes>
+                    <include>*.yml</include>
+                </includes>
+            </resource>
+        </resources>
     </build>
     
 </project>
