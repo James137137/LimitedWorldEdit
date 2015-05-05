@@ -9,7 +9,9 @@ import com.james137137.LimitedWorldEdit.LimitedWorldEdit;
 import com.sk89q.worldedit.BlockVector;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.bukkit.selections.Selection;
+import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.domains.DefaultDomain;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -80,7 +82,7 @@ public class WorldGaurdAPI {
 
         if (pos1Id.equalsIgnoreCase(pos2Id)) {
             ProtectedRegion region = mgr.getRegion(pos1Id);
-            if (region.getOwners() != null && region.getOwners().contains(sender.getUniqueId())) {
+            if (region.getOwners() != null && region.getOwners().contains(myWorldGuardPlugin.wrapPlayer(sender))) {
                 return true;
             } else {
                 sender.sendMessage("You are not owner of this region");
