@@ -21,9 +21,9 @@
         <dependency>
             <groupId>com.sk89q</groupId>
             <artifactId>worldguard</artifactId>
-            <version>LATEST</version>
-            <scope>provided</scope>
-            <type>jar</type>
+            <version>5.9</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/worldguard-5.9.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>com.sk89q</groupId>
