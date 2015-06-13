@@ -51,6 +51,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.UUID;
 import java.util.logging.Level;
+import org.bukkit.entity.Player;
 
 /**
  * <p> The metrics class obtains data about a plugin and submits statistics about it to the metrics backend. </p> <p>
@@ -354,7 +355,12 @@ public class Metrics {
         boolean onlineMode = Bukkit.getServer().getOnlineMode(); // TRUE if online mode is enabled
         String pluginVersion = description.getVersion();
         String serverVersion = Bukkit.getVersion();
-        int playersOnline = Bukkit.getServer().getOnlinePlayers().length;
+        int playersOnline = 0;
+        for (Player player : Bukkit.getServer().getOnlinePlayers())
+        {
+            playersOnline++;
+        }
+        
 
         // END server software specific section -- all code below does not use any code outside of this class / Java
 
