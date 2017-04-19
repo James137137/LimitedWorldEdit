@@ -5,7 +5,6 @@
  */
 package com.james137137.LimitedWorldEdit;
 
-import com.james137137.LimitedWorldEdit.hooks.WorldGaurdAPI;
 import com.sk89q.worldedit.blocks.BaseBlock;
 
 import java.util.HashSet;
@@ -35,29 +34,9 @@ public class WEManager {
 
     public static HashSet<RegionWrapper> getMask(Player player) {
         HashSet<RegionWrapper> regions = new HashSet<>();
-        if (player == null)
-        {
-            System.out.println("player is null");
-            return null;
-        }
-        if (LimitedWorldEdit.api == null)
-        {
-            System.err.println("LimitedWorldEdit.api is null");
-        }
         regions.addAll(LimitedWorldEdit.api.getRegions(player));
         return regions;
     }
 
-    public static boolean intersects(RegionWrapper region1, RegionWrapper region2) {
-        return (region1.minX <= region2.maxX) && (region1.maxX >= region2.minX) && (region1.minZ <= region2.maxZ) && (region1.maxZ >= region2.minZ);
-    }
-
-    public static boolean regionContains(RegionWrapper selection, HashSet<RegionWrapper> mask) {
-        for (RegionWrapper region : mask) {
-            if (intersects(region, selection)) {
-                return true;
-            }
-        }
-        return false;
-    }
+    
 }

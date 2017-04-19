@@ -5,8 +5,6 @@
  */
 package com.james137137.LimitedWorldEdit;
 
-import com.sk89q.worldedit.extent.AbstractDelegateExtent;
-import com.sk89q.worldedit.extent.Extent;
 import java.util.HashSet;
 import com.sk89q.worldedit.Vector;
 import com.sk89q.worldedit.Vector2D;

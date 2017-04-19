@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.james137137.LimitedWorldEdit;
 
 import org.bukkit.Bukkit;
@@ -46,40 +41,5 @@ public class RegionWrapper {
         return x >= this.minX && x <= this.maxX && z >= this.minZ && z <= this.maxZ;
     }
     
-    public boolean intersects(RegionWrapper other) {
-        return other.minX <= this.maxX && other.maxX >= this.minX && other.minY <= this.maxY && other.maxY >= this.minY;
-    }
-
-    @Override
-    public int hashCode() {
-        return this.minX + 13 * this.maxX + 23 * this.minZ + 39 * this.maxZ;
-    }
     
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (obj == this) {
-            return true;
-        }
-        if (obj instanceof RegionWrapper) {
-            RegionWrapper other = (RegionWrapper) obj;
-            return this.minX == other.minX && this.minZ == other.minZ && this.minY == other.minY && this.maxX == other.maxX && this.maxZ == other.maxZ
-                    && this.maxY == other.maxY;
-        }
-        return false;
-    }
-    
-    @Override
-    public String toString() {
-        return this.minX + "->" + this.maxX + "," + this.minZ + "->" + this.maxZ;
-    }
-    
-    public Location[] getCorners(String world) {
-        
-        Location pos1 = new Location(Bukkit.getWorld(world), this.minX, this.minY, this.minZ);
-        Location pos2 = new Location(Bukkit.getWorld(world), this.maxX, this.maxY, this.maxZ);
-        return new Location[] { pos1, pos2 };
-    }
 }
