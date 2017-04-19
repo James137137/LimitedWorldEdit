@@ -6,15 +6,14 @@
 package com.james137137.LimitedWorldEdit.hooks;
 
 import com.james137137.LimitedWorldEdit.LimitedWorldEdit;
+import com.james137137.LimitedWorldEdit.RegionWrapper;
 import com.sk89q.worldedit.BlockVector;
-import com.sk89q.worldedit.Vector;
-import com.sk89q.worldedit.bukkit.selections.Selection;
-import com.sk89q.worldguard.LocalPlayer;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.domains.DefaultDomain;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.managers.RegionManager;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -22,9 +21,9 @@ import org.bukkit.plugin.Plugin;
  *
  * @author James
  */
-public class WorldGaurdAPI {
+public class WorldGaurdAPI implements API {
 
-    private final WorldGuardPlugin myWorldGuardPlugin;
+    private static WorldGuardPlugin myWorldGuardPlugin;
 
     public WorldGaurdAPI(LimitedWorldEdit aThis) {
         myWorldGuardPlugin = getWorldGuard(aThis);
@@ -41,56 +40,21 @@ public class WorldGaurdAPI {
         return (WorldGuardPlugin) plugin;
     }
 
-    public boolean CanBuildHere(Player sender, Selection sel,BlockVector pos1,BlockVector pos2) {
-        RegionManager mgr = myWorldGuardPlugin.getGlobalRegionManager().get(sel.getWorld());
-        Vector pos1pt = new Vector(pos1.getBlockX(), pos1.getBlockY(), pos1.getBlockZ());
-        Vector pos2pt = new Vector(pos2.getBlockX(), pos2.getBlockY(), pos2.getBlockZ());
-        ApplicableRegionSet pos1set = mgr.getApplicableRegions(pos1pt);
-        ApplicableRegionSet pos2set = mgr.getApplicableRegions(pos2pt);
-        if (sender.hasPermission("LimitedWorldEdit.unguarded")) {
-            if (pos1set.size() == 0) {
-                if (pos2set.size() == 0) {
-                    return true;
-                } else {
-                    sender.sendMessage("Pos2 must outside a WorldGaurd region");
-                    return false;
-                }
-
-            } else {
-                if (pos2set.size() == 0) {
-                    sender.sendMessage("Pos1 must outside a WorldGaurd region");
-                    return true;
-                } else {
-                    sender.sendMessage("Both Pos1 and Pos2 must outside a WorldGaurd region");
-                    return false;
-                }
-
+    @Override
+    public List<RegionWrapper> getRegions(Player player) {
+        List<RegionWrapper> output = new ArrayList<>();
+        RegionManager mgr = myWorldGuardPlugin.getRegionManager(player.getWorld());
+        Collection<ProtectedRegion> values = mgr.getRegions().values();
+        for (ProtectedRegion value : values) {
+            if (value.getOwners().contains(player.getUniqueId())) {
+                BlockVector minimumPoint = value.getMinimumPoint();
+                BlockVector maximumPoint = value.getMaximumPoint();
+                RegionWrapper regionWrapper = new RegionWrapper(minimumPoint.getBlockX(), maximumPoint.getBlockX(), minimumPoint.getBlockY(), maximumPoint.getBlockY(),
+                        minimumPoint.getBlockZ(), maximumPoint.getBlockZ());
+                output.add(regionWrapper);
             }
         }
-        if (pos1set.size() == 0) {
-            sender.sendMessage("pos1 is not in a WorldGuard region");
-            return false;
-        }
-        if (pos2set.size() == 0) {
-            sender.sendMessage("pos2 is not in a WorldGuard region");
-            return false;
-        }
-        String pos1Id;
-        String pos2Id;
-        pos1Id = ((ProtectedRegion) pos1set.iterator().next()).getId();
-        pos2Id = ((ProtectedRegion) pos2set.iterator().next()).getId();
 
-        if (pos1Id.equalsIgnoreCase(pos2Id)) {
-            ProtectedRegion region = mgr.getRegion(pos1Id);
-            if (region.getOwners() != null && region.getOwners().contains(myWorldGuardPlugin.wrapPlayer(sender))) {
-                return true;
-            } else {
-                sender.sendMessage("You are not owner of this region");
-            }
-        } else {
-            sender.sendMessage("pos1 and pos2 are not in the same region");
-            return false;
-        }
-        return false;
+        return output;
     }
 }

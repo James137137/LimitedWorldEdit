@@ -6,6 +6,7 @@
 package com.james137137.LimitedWorldEdit.hooks;
 
 import com.james137137.LimitedWorldEdit.LimitedWorldEdit;
+import com.james137137.LimitedWorldEdit.RegionWrapper;
 import com.palmergames.bukkit.towny.Towny;
 import com.palmergames.bukkit.towny.TownyMessaging;
 import com.palmergames.bukkit.towny.TownySettings;
@@ -13,6 +14,8 @@ import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.exceptions.TownyException;
 import com.palmergames.bukkit.towny.object.Coord;
 import com.palmergames.bukkit.towny.object.PlayerCache;
+import com.palmergames.bukkit.towny.object.Resident;
+import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownyPermission;
 import com.palmergames.bukkit.towny.object.TownyUniverse;
 import com.palmergames.bukkit.towny.object.TownyWorld;
@@ -21,6 +24,8 @@ import com.palmergames.bukkit.towny.utils.PlayerCacheUtil;
 import com.palmergames.bukkit.towny.war.flagwar.TownyWar;
 import com.palmergames.bukkit.towny.war.flagwar.TownyWarConfig;
 import com.sk89q.worldedit.BlockVector;
+import java.util.ArrayList;
+import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -32,13 +37,29 @@ import org.bukkit.plugin.Plugin;
  *
  * @author James
  */
-public class TownyAPI {
+public class TownyAPI implements API{
 
     private final Towny towny;
 
     public TownyAPI(LimitedWorldEdit athis) {
         Plugin plugin = athis.getServer().getPluginManager().getPlugin("Towny");
         towny = (Towny) plugin;
+    }
+    
+    @Override
+    public List<RegionWrapper> getRegions(Player player) {
+        List<RegionWrapper> output = new ArrayList<>();
+        
+        for (Town town: towny.getTownyUniverse().getTownsMap().values())
+        {
+            for (Resident res : town.getResidents()) {
+                if (res.getName().equals(player.getName()))
+                {
+                    
+                }
+            }
+        }
+        return null;
     }
 
     public boolean CanBuildHere(Player player, BlockVector pos1, World selworld) {
@@ -82,5 +103,4 @@ public class TownyAPI {
         }
         return myResult;
     }
-
 }

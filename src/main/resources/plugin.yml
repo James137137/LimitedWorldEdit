@@ -14,6 +14,3 @@ permissions:
   LimitedWorldEdit.bypass:
     description: Allows player to bypass LimitedWorldEdit
     default: op
-  LimitedWorldEdit.unguarded:
-    description: Allows player worldEdit only in non-WG regions
-    default: op
