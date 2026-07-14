@@ -23,7 +23,10 @@ final class EditSessionListener {
             return;
         }
 
-        OwnedRegionMask mask = regionProvider.forPlayer(event.getWorld(), actor.getUniqueId());
+        OwnedRegionMask mask = LimitedWorlds.mask(event.getWorld());
+        if (mask == null) {
+            mask = regionProvider.forPlayer(event.getWorld(), actor.getUniqueId());
+        }
         event.setExtent(new LimitedExtent(mask, event.getExtent()));
     }
 

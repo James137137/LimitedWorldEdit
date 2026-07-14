@@ -56,12 +56,14 @@ class LimitedExtentTest {
         RecordingExtent delegate = new RecordingExtent();
         BlockState outsideState = mock(BlockState.class);
         BaseBlock outsideBlock = mock(BaseBlock.class);
-        LimitedExtent extent = new LimitedExtent(mask(), delegate, outsideState, outsideBlock);
+        BiomeType outsideBiome = mock(BiomeType.class);
+        LimitedExtent extent = new LimitedExtent(mask(), delegate, outsideState, outsideBlock, outsideBiome);
 
         assertSame(delegate.blockState, extent.getBlock(INSIDE));
         assertSame(outsideState, extent.getBlock(OUTSIDE));
         assertSame(delegate.fullBlock, extent.getFullBlock(INSIDE));
         assertSame(outsideBlock, extent.getFullBlock(OUTSIDE));
+        assertSame(outsideBiome, extent.getBiome(OUTSIDE));
     }
 
     @Test
@@ -84,7 +86,8 @@ class LimitedExtentTest {
     }
 
     private static LimitedExtent testExtent(Extent delegate) {
-        return new LimitedExtent(mask(), delegate, mock(BlockState.class), mock(BaseBlock.class));
+        return new LimitedExtent(
+                mask(), delegate, mock(BlockState.class), mock(BaseBlock.class), mock(BiomeType.class));
     }
 
     private static final class RecordingExtent extends NullExtent {

@@ -12,6 +12,8 @@ final class WorldGuardRegionProvider {
             return OwnedRegionMask.empty();
         }
 
+        world = LimitedWorlds.unwrap(world);
+
         RegionManager regionManager = WorldGuard.getInstance()
                 .getPlatform()
                 .getRegionContainer()

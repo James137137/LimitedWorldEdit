@@ -9,6 +9,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.util.Location;
 import com.sk89q.worldedit.world.biome.BiomeType;
+import com.sk89q.worldedit.world.biome.BiomeTypes;
 import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
 import com.sk89q.worldedit.world.block.BlockStateHolder;
@@ -21,20 +22,23 @@ final class LimitedExtent extends AbstractDelegateExtent {
     private final OwnedRegionMask mask;
     private final BlockState outsideBlockState;
     private final BaseBlock outsideFullBlock;
+    private final BiomeType outsideBiome;
 
     LimitedExtent(OwnedRegionMask mask, Extent extent) {
         this(mask, extent, airState());
     }
 
     private LimitedExtent(OwnedRegionMask mask, Extent extent, BlockState outsideBlockState) {
-        this(mask, extent, outsideBlockState, outsideBlockState.toBaseBlock());
+        this(mask, extent, outsideBlockState, outsideBlockState.toBaseBlock(), plainsBiome());
     }
 
-    LimitedExtent(OwnedRegionMask mask, Extent extent, BlockState outsideBlockState, BaseBlock outsideFullBlock) {
+    LimitedExtent(OwnedRegionMask mask, Extent extent, BlockState outsideBlockState,
+                  BaseBlock outsideFullBlock, BiomeType outsideBiome) {
         super(extent);
         this.mask = Objects.requireNonNull(mask, "mask");
         this.outsideBlockState = Objects.requireNonNull(outsideBlockState, "outsideBlockState");
         this.outsideFullBlock = Objects.requireNonNull(outsideFullBlock, "outsideFullBlock");
+        this.outsideBiome = Objects.requireNonNull(outsideBiome, "outsideBiome");
     }
 
     @Override
@@ -67,6 +71,11 @@ final class LimitedExtent extends AbstractDelegateExtent {
     }
 
     @Override
+    public BiomeType getBiome(BlockVector3 position) {
+        return mask.contains(position) ? super.getBiome(position) : outsideBiome;
+    }
+
+    @Override
     public List<? extends Entity> getEntities() {
         return filterEntities(super.getEntities());
     }
@@ -86,4 +95,9 @@ final class LimitedExtent extends AbstractDelegateExtent {
     private static BlockState airState() {
         return Objects.requireNonNull(BlockTypes.AIR).getDefaultState();
     }
+
+    private static BiomeType plainsBiome() {
+        return Objects.requireNonNull(BiomeTypes.PLAINS);
+    }
+
 }
