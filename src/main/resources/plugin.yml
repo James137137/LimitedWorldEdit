@@ -1,16 +1,17 @@
 name: LimitedWorldEdit
-softdepend: [WorldEdit,WorldGuard,Towny,PlotMe]
-main: com.james137137.LimitedWorldEdit.LimitedWorldEdit
 version: ${project.version}
+main: com.james137137.limitedworldedit.LimitedWorldEditPlugin
+api-version: '26.1.2'
+description: Restricts WorldEdit operations to WorldGuard regions owned by the player.
 authors: [James Anderson]
-commands:
-  DonatorsWorldEdit:
-    description: DonatorsWorldEdit
+website: https://github.com/james137137/LimitedWorldEdit
+depend: [WorldEdit, WorldGuard]
 permissions:
-  LimitedWorldEdit.*:
-    description: Gives access to all LimitedWorldEdit commands
+  limitedworldedit.*:
+    description: Grants every LimitedWorldEdit permission.
+    default: op
     children:
-      LimitedWorldEdit.bypass: true
-  LimitedWorldEdit.bypass:
-    description: Allows player to bypass LimitedWorldEdit
+      limitedworldedit.bypass: true
+  limitedworldedit.bypass:
+    description: Allows WorldEdit operations outside owned WorldGuard regions.
     default: op
